@@ -27,6 +27,7 @@ set(LIBRARY_OUTPUT_PATH ${vibe2sewer_BINARY_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${vibe2sewer_BINARY_DIR})
 
 add_subdirectory(src/vibe2sewer)
+add_subdirectory(scripts)
 
 
 
