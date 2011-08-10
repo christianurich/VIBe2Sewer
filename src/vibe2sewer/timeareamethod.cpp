@@ -189,6 +189,7 @@ void TimeAreaMethod::run() {
     std::vector<double> QrKritPerShaft_total;
     std::vector<double> Area_total;
     std::vector<double> Lengths;
+    std::vector<std::vector<string> > ConnectedInletNodes;
 
     for (int i = 0; i < this->PointList.size(); i++) {
         WasteWaterPerShaft.push_back(0);
@@ -198,6 +199,8 @@ void TimeAreaMethod::run() {
         QrKritPerShaft.push_back(0);
         QrKritPerShaft_total.push_back(0);
         Area_total.push_back(0);
+        std::vector<std::string> vec;
+        ConnectedInletNodes.push_back(vec);
 
     }
     std::vector<std::string> endPointNames = VectorDataHelper::findElementsWithIdentifier(this->IdentifierEndPoint,this->Network->getPointsNames());
@@ -232,6 +235,9 @@ void TimeAreaMethod::run() {
         double DeltaA = 0;
         do {
             //Check if Endpoint is reached
+            std::vector<std::string> nodes = ConnectedInletNodes[id];
+            nodes.push_back( name );
+            ConnectedInletNodes[id] = nodes;
             WasteWaterPerShaft[id]=WasteWaterPerShaft[id]+ wastewater;
             InfiltrartionWaterPerShaft[id] = InfiltrartionWaterPerShaft[id] + infiltreationwater;
             AreaPerShaft[id] =  AreaPerShaft[id] + area;
@@ -321,9 +327,21 @@ void TimeAreaMethod::run() {
         attr.setAttribute("QrKrit_total", QrKritPerShaft_total[i]* (45./(attr.getAttribute("Time")/60 + 30)));
         attr.setAttribute("Area_total", Area_total[i]);
 
+        //Write Connected Nodes
+        std::stringstream connectedNodeList;
+        for (int j = 0; j < ConnectedInletNodes[i].size(); j++) {
+            if (j != 0)
+                connectedNodeList << ",";
+            connectedNodeList << ConnectedInletNodes[i][j];
+
+        }
+        attr.setAttribute("ConnectedInlets", connectedNodeList.str());
+
+        attr.setAttribute("StorageV",0);
+        attr.setAttribute("Storage",0);
         if (attr.getAttribute("WWTP") == 1) {
-            attr.setAttribute("StorageV",attr.getAttribute("QrKrit_total"));
             attr.setAttribute("Storage",1);
+            attr.setAttribute("StorageV",attr.getAttribute("QrKrit_total"));
         }
 
         this->Network_out->setAttributes(id, attr);

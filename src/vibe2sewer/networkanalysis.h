@@ -27,6 +27,13 @@
 #define NETWORKANALYSIS_H
 #include "module.h"
 using namespace vibens;
+
+/**
+  * @ingroup Sewer
+  * @brief Network analysis
+  *
+  * @author Christian Urich
+  */
 class VIBE_HELPER_DLL_EXPORT NetworkAnalysis : public  Module {
 VIBe_DECLARE_NODE( NetworkAnalysis)
 
