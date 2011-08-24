@@ -145,7 +145,7 @@ void TimeAreaMethod::run() {
         inlet_attr.setAttribute("WasterWater", ww);
         inlet_attr.setAttribute("Area",area*imp);
         inlet_attr.setAttribute("QrKrit", 15.*area/10000*imp);
-
+        inlet_attr.setAttribute("Impervious",imp);
         this->Network_out->setAttributes(name, inlet_attr);
         this->Network_out->setAttributes(this->IdentifierCatchment+id, catchment_attr);
         Population_sum += catchment_attr.getAttribute("Population");
