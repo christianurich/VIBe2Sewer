@@ -44,7 +44,7 @@ std::string IdentifierEndPoint;
 std::string IdentifierShaft;
 std::string IdentifierCatchment;
 std::string IdentifierOutfall;
-std::string IdentifierWier;
+std::string IdentifierWeir;
 std::string RainFile;
 std::string FileName;
 std::vector<Point> PointList;

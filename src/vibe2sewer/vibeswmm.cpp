@@ -41,7 +41,7 @@ VibeSWMM::VibeSWMM()
     this->IdentifierShaft = "Shaft_";
     this->IdentifierCatchment = "Catchment_";
     this->IdentifierOutfall = "Outfall_";
-    this->IdentifierWier = "Weir_";
+    this->IdentifierWeir = "Weir_";
     this->FileName = "swmmfile";
     this->climateChangeFactor = 1;
     this->RainFile = "";
@@ -60,7 +60,7 @@ VibeSWMM::VibeSWMM()
     this->addParameter("IdentifierShaft", VIBe2::STRING, &this->IdentifierShaft);
     this->addParameter("IdentifierCatchment", VIBe2::STRING, & this->IdentifierCatchment);
     this->addParameter("IdentifierOutfall", VIBe2::STRING,  & this->IdentifierOutfall);
-    this->addParameter("IdentifierWeir", VIBe2::STRING, & this->IdentifierWier);
+    this->addParameter("IdentifierWeir", VIBe2::STRING, & this->IdentifierWeir);
     this->addParameter("ClimateChangeFactor", VIBe2::DOUBLE, & this->climateChangeFactor);
     this->addParameter("Vr", VIBe2::DOUBLEDATA_OUT, & this->Vr);
     this->addParameter("Vp", VIBe2::DOUBLEDATA_OUT, & this->Vp);
@@ -86,7 +86,6 @@ void VibeSWMM::writeRainFile() {
             for(int i = 0; i < splitline.size() - 1;i++)
                 out << QString(splitline[i]).toStdString() << " ";
             double r = QString(splitline[splitline.size()-1]).toDouble();
-            //out << r*(1+0.025*counterRain) << "\n";
             out << r*(this->climateChangeFactor) << "\n";
         }
 
@@ -616,7 +615,7 @@ void VibeSWMM::writeStorage(std::fstream &inp) {
     }
 }
 
-void VibeSWMM::writeOutfalls(std::fstream &inp) {
+void VibeSWMM:: writeOutfalls(std::fstream &inp) {
     //OUTFALLS
     //-------------------------//
     inp<<"[OUTFALLS]\n";
@@ -840,17 +839,13 @@ void VibeSWMM::writeWeir(std::fstream &inp)
     inp<<";;Name           Node             Node             Type         Height     Coeff.     Gate Con.     Coeff.\n";
     inp<<";;-------------- ---------------- ---------------- ------------ ---------- ---------- ---- -------- ----------\n";
     //LINK984          NODE109          NODE985          TRANSVERSE   0          1.80       NO   0        0
-    std::vector<std::string> namesWeir = VectorDataHelper::findElementsWithIdentifier(this->IdentifierWier, this->Network->getEdgeNames());
+    std::vector<std::string> namesWeir = VectorDataHelper::findElementsWithIdentifier(this->IdentifierWeir, this->Network->getEdgeNames());
     for ( int i = 0; i < namesWeir.size(); i++ ) {
         std::vector<Point> WeirPoints = this->Network->getPoints(namesWeir[i]);
 
 
         double diameter = 0;
         bool storage = false;
-        /*if (nStartNode->Code == STORAGE )
-             storage = true;
-         if (nEndNode->Code == STORAGE )
-             storage = true;*/
         //Get Upper Points Connected with the  Weir
         std::vector<std::string> connectedConduits = VectorDataHelper::findConnectedEges((*this->Network), WeirPoints[0], 1, BOTH, this->IdentifierConduit);
 
@@ -865,8 +860,6 @@ void VibeSWMM::writeWeir(std::fstream &inp)
         double x =  WeirPoints[0].x -  WeirPoints[1].x;
         double y = WeirPoints[0].y -  WeirPoints[1].y;
         int StartNode = this->findNewID(WeirPoints[0]);
-        double lenght = sqrt(x*x +y*y);
-        //if ( link->Code == LINK_OUTFALL ) {
         inp<<"WEIR"<<i<<"\tNODE"<<StartNode<<"\tOUTFALL"<<i<<"\t";
         inp<<"TRANSVERSE" << "\t";
         if (storage == true ) {
@@ -976,21 +969,21 @@ void VibeSWMM::writeSWMMheader(std::fstream &inp)
     //inp<<"START_TIME 00:00\n";
     //inp<<"END_DATE 1/2/2000\n";
     //inp<<"END_TIME 00:00\n";
-    //inp<<"WET_STEP 00:05:00\n";
+    //inp<<"WET_STEP 00:01:00\n";
     //inp<<"DRY_STEP 01:00:00\n";
     //inp<<"ROUTING_STEP 00:05:00\n";
     //inp<<"VARIABLE_STEP 0.99\n";
-    //inp<<"REPORT_STEP  00:05:00\n";
+    //inp<<"REPORT_STEP  00:01:00\n";
     //inp<<"REPORT_START_DATE 1/1/2000\n";
     //inp<<"REPORT_START_TIME 00:00\n\n";
     inp<<"FLOW_UNITS\t\tLPS\n";
     inp<<"INFILTRATION\t\tHORTON\n";
     inp<<"FLOW_ROUTING\t\tDYNWAVE\n";
-    inp<<"START_DATE\t\t1/1/2000\n";
+    inp<<"START_DATE\t\t7/1/2008\n";
     inp<<"START_TIME\t\t00:00\n";
-    inp<<"END_DATE\t\t1/2/2000\n";
+    inp<<"END_DATE\t\t7/31/2008\n";
     inp<<"END_TIME\t\t00:00\n";
-    inp<<"REPORT_START_DATE\t1/1/2000\n";
+    inp<<"REPORT_START_DATE\t7/1/2008\n";
     inp<<"REPORT_START_TIME\t00:00\n";
     inp<<"SWEEP_START\t\t01/01\n";
     inp<<"SWEEP_END\t\t12/31\n";
@@ -1028,7 +1021,7 @@ void VibeSWMM::writeSWMMheader(std::fstream &inp)
     inp<<"[RAINGAGES]\n";
     inp<<";;Name\tFormat\tInterval\tSCF\tDataSource\tSourceName\tunits\n";
     inp<<";;============================================================================\n";
-    inp<<"RG01\tVOLUME\t0:05\t1.0\tFILE\t";
+    inp<<"RG01\tVOLUME\t0:01\t1.0\tFILE\t";
     //inp<< "rain.dat";
     inp<< this->SWMMPath.absolutePath().toStdString() + "/" + "rain.dat";
     //mag mich nicht
